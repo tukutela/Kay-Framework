@@ -59,7 +59,8 @@ def send_reset_password_instruction(request, user_key, session_key):
                              {'appname': settings.APP_NAME})
   message = render_to_string('auth/reset_password_instruction.txt',
                              {'appname': settings.APP_NAME,
-                              'session_key': session_key})
+                              'session_key': session_key,
+                              'account': user})
   mail.send_mail(subject=subject, body=message,
                  sender=settings.DEFAULT_MAIL_FROM, to=user.email)
   return Response("OK")
@@ -74,7 +75,8 @@ def send_registration_confirm(request, registration_key):
   message = render_to_string(
     'registration/activation_email.txt',
     {'activation_key': registration_key,
-     'appname': settings.APP_NAME})
+     'appname': settings.APP_NAME,
+     'account': p.parent()})
   mail.send_mail(subject=subject, body=message,
                  sender=settings.DEFAULT_MAIL_FROM, to=p.parent().email)
   return Response("OK")

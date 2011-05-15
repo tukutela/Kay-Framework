@@ -55,7 +55,7 @@ class DatastoreUserDBOperationMixin(object):
 
   @classmethod
   def create_inactive_user(cls, user_name, password, email, send_email=True,
-                           do_registration=True):
+                           do_registration=True, **kwargs):
     import datetime
     from kay.registration.models import RegistrationProfile
     from google.appengine.api import taskqueue
@@ -75,14 +75,14 @@ class DatastoreUserDBOperationMixin(object):
 
         expiration_date = datetime.datetime.now() + \
             datetime.timedelta(seconds=settings.ACCOUNT_ACTIVATION_DURATION)
+        user = cls(key_name=key_name, activated=False, user_name=user_name,
+                   password=crypto.gen_pwhash(password), email=email, **kwargs)
         taskqueue.add(url=url_for('_internal/expire_registration',
                                   registration_key=str(profile_key)),
                       eta=expiration_date, transactional=True)
         taskqueue.add(url=url_for('_internal/send_registration_confirm',
                                   registration_key=str(profile_key)),
                       transactional=True)
-        user = cls(key_name=key_name, activated=False, user_name=user_name,
-                   password=crypto.gen_pwhash(password), email=email)
         profile = RegistrationProfile(user=user, parent=user,
                                       key_name=activation_key)
         db.put([profile, user])
