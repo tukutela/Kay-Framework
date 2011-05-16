@@ -75,7 +75,7 @@ def login(request):
         else:
           return redirect(next)
       else:
-        message = _("Failed to login.")
+        message = _("Failed to login successfully with those credentials, try another or click the 'Forgot Password' link below.")
   return render_to_response("auth/loginform.html",
                             {"form": form.as_widget(),
                              "message": message})
