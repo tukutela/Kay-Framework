@@ -5,6 +5,7 @@ from werkzeug.utils import import_string
 from kay.conf import settings
 from kay.utils import local
 from kay.utils import forms
+import simplejson
 
 class OwnerProperty(db.ReferenceProperty):
 
@@ -77,3 +78,19 @@ class StringListPropertyPassThrough(db.StringListProperty):
     if not value:
       return []
     return value
+
+class JsonProperty(db.TextProperty):
+	def validate(self, value):
+		return value 
+	
+	def get_value_for_datastore(self, model_instance):
+		result = super(JsonProperty, self).get_value_for_datastore(model_instance)
+		result = simplejson.dumps(result)
+		return db.Text(result)
+		
+	def make_value_from_datastore(self, value):
+		try:
+			value = simplejson.loads(str(value))
+		except:
+			pass #do nothing if its not a JSON object
+		return super(JsonProperty, self).make_value_from_datastore(value)
