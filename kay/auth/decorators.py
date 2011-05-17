@@ -22,12 +22,15 @@ from kay.utils.decorators import auto_adapt_to_methods
 
 def login_required(func):
   def inner(request, *args, **kwargs):
-    if request.user.is_anonymous():
-      if request.is_xhr:
-        raise Forbidden
-      else:
-        return redirect(create_login_url(request.url))
-    return func(request, *args, **kwargs)
+    if not request.user.activated:
+      if request.user.is_anonymous():
+        if request.is_xhr:
+          raise Forbidden
+        else:
+          return redirect(create_login_url(request.url))
+      return redirect(create_login_url(request.url))
+    else:
+      return func(request, *args, **kwargs)
   update_wrapper(inner, func)
   return inner
 

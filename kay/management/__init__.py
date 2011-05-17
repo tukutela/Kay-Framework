@@ -77,7 +77,6 @@ for app in settings.INSTALLED_APPS:
         additional_actions.append(name)
   except Exception, e:
     import traceback
-    print "OOOOH, MUST BE AN ERROR"
     sys.stderr.write('\n'.join(traceback.format_exception(*(sys.exc_info()))))
     pass
 
