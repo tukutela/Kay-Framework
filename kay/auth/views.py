@@ -117,7 +117,7 @@ def login_box(request):
 def logout(request):
   from kay.auth import logout
   logout(request)
-  next = request.values.get("next")
+  next = request.values.get("next","/")
   return redirect(unquote_plus(next))
 
 @no_cache

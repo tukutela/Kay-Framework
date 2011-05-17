@@ -66,7 +66,9 @@ for app in settings.INSTALLED_APPS:
   try:
     appmod = import_string(app)
     if not os.path.exists(os.path.join(os.path.dirname(appmod.__file__),
-                                       'management.py')):
+                                       'management.py')) and \
+       not os.path.exists(os.path.join(os.path.dirname(appmod.__file__),
+       									'management/__init__.py')):
       continue
     management_mod = import_string("%s.management" % app)
     for name, val in vars(management_mod).iteritems():
@@ -75,6 +77,7 @@ for app in settings.INSTALLED_APPS:
         additional_actions.append(name)
   except Exception, e:
     import traceback
+    print "OOOOH, MUST BE AN ERROR"
     sys.stderr.write('\n'.join(traceback.format_exception(*(sys.exc_info()))))
     pass
 
